@@ -243,18 +243,42 @@
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
+      transform-origin: right bottom;
+      overflow: hidden;
     }
     
     @media (max-width: 768px) {
       .chat-container {
-        max-width: 100%;
-        height: 100vh;
-        height: 100dvh;
+        max-width: 98vw;
+        width: 98vw;
+        min-width: 0;
+        height: 80vh;
+        bottom: 16px;
+        right: 8px;
+        left: auto;
+        border-radius: 18px 18px 0 18px;
+        box-shadow: 0 0 24px var(--shadow-strong);
+        padding-bottom: 0;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: fixed;
+      }
+      .chat-container.closed {
+        transform: translateX(110%) scale(0.98);
+        opacity: 0;
+        pointer-events: none;
+      }
+      .chat-container.open {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        pointer-events: auto;
       }
     }
     
-    .chat-container.closed {
-      transform: translateY(calc(100% - 60px));
+    /* Desktop behavior for closed state (avoid overriding mobile rules) */
+    @media (min-width: 769px) {
+      .chat-container.closed {
+        transform: translateY(calc(100% - 60px));
+      }
     }
     
     .chat-header {
@@ -399,6 +423,7 @@
     
     .chat-input {
       flex: 1;
+      min-width: 0; /* allow input to shrink on small screens */
       border: 2px solid var(--marble);
       padding: 0.75rem 1rem;
       border-radius: 25px;
@@ -429,6 +454,7 @@
       border: none;
       width: 44px;
       height: 44px;
+      flex: 0 0 44px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -667,6 +693,29 @@
     footer p {
       opacity: 0.8;
     }
+    /* Chat launcher (floating icon) */
+    .chat-launcher {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1200;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      border: none;
+      cursor: pointer;
+    }
+    .chat-launcher:active { transform: translateY(1px); }
+    @media (max-width: 768px) {
+      .chat-launcher { bottom: 14px; right: 14px; width: 52px; height: 52px; }
+    }
   </style>
 </head>
 <body>
@@ -765,6 +814,8 @@
       <button class="send-btn" id="sendBtn" aria-label="Send message">➤</button>
     </div>
   </div>
+
+  <button id="chatLauncher" class="chat-launcher" aria-label="Open chat">💬</button>
 
   <script>
     // ============================================================================
@@ -945,6 +996,12 @@
 
         // Add Event Listeners
         dom.langToggle.addEventListener('click', toggleLanguage);
+        const launcherEl = document.getElementById('chatLauncher');
+        if (launcherEl) {
+          launcherEl.addEventListener('click', () => {
+            if (!isChatOpen) toggleChat();
+          });
+        }
         dom.chatHeader.addEventListener('click', toggleChat);
         dom.chatToggle.addEventListener('click', (e) => {
           e.stopPropagation(); // Prevent header click
@@ -1005,11 +1062,21 @@
       // --- CHAT VISIBILITY ---
       function toggleChat() {
         isChatOpen = !isChatOpen;
-        dom.chatContainer.classList.toggle('closed', !isChatOpen);
-        dom.chatHeader.setAttribute('aria-expanded', isChatOpen);
         if (isChatOpen) {
+          dom.chatContainer.classList.remove('closed');
+          dom.chatContainer.classList.add('open');
+          dom.chatHeader.setAttribute('aria-expanded', true);
           dom.chatInput.focus();
           scrollToBottom();
+        } else {
+          dom.chatContainer.classList.remove('open');
+          dom.chatContainer.classList.add('closed');
+          dom.chatHeader.setAttribute('aria-expanded', false);
+        }
+        // Show/hide launcher
+        const launcher = document.getElementById('chatLauncher');
+        if (launcher) {
+          launcher.style.display = isChatOpen ? 'none' : 'flex';
         }
       }
       
@@ -1099,13 +1166,23 @@
         let bubbleContent = '';
 
         switch (msg.type) {
-          // ...existing code...
+          case 'card':
+          case 'reservation_form':
+            bubbleContent = getReservationFormHTML(msg.message);
+            break;
+          case 'availability':
+            bubbleContent = getAvailabilityHTML(msg.message, msg.data);
+            break;
+          case 'reservation_confirm':
+            bubbleContent = getConfirmationHTML(msg.message, msg.data);
+            break;
+          case 'error':
+            bubbleContent = getErrorHTML(msg.message);
+            break;
           case 'text':
           default:
             // Render markdown for bot messages
             if (msg.sender === 'bot') {
-              // Use a simple markdown parser (marked.js or showdown)
-              // For this patch, use a minimal inline parser for bold, italics, lists
               let md = msg.message || '';
               // Escape HTML
               md = md.replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -1124,7 +1201,7 @@
               bubbleContent = `<div class="message-bubble">${md}</div>`;
             } else {
               // User messages: just escape HTML
-              const safeMessage = msg.message
+              const safeMessage = (msg.message || '')
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
                 .replace(/<a href=\"([^\"]+)\"/g, '<a href="$1" target="_blank" rel="noopener noreferrer"');
@@ -1327,10 +1404,18 @@
         }
         
         if (isBotTyping) return; // Prevent spamming
-        
+        // If the user is asking about reservations, show the reservation form immediately
+        const reserveRegex = /\b(reserve|reservation|book|booking|book a table|reserve a table)\b/i;
+        if (reserveRegex.test(message)) {
+          addMessage('user', message);
+          dom.chatInput.value = '';
+          addMessage('bot', strings[currentLang].quickReserve, 'reservation_form');
+          return;
+        }
+
         addMessage('user', message);
         dom.chatInput.value = '';
-        
+
         sendMessageToBot(message, 'text');
       }
       
