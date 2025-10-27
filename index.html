@@ -43,6 +43,7 @@
       background: var(--marble);
       line-height: 1.6;
       overflow-x: hidden;
+      touch-action: pan-y; /* allow vertical pan, prevent accidental horizontal */
     }
     
     h1, h2, h3, h4 {
@@ -249,26 +250,28 @@
     
     @media (max-width: 768px) {
       .chat-container {
-        max-width: 98vw;
-        width: 98vw;
+        max-width: calc(100% - 32px);
+        width: calc(100% - 32px);
         min-width: 0;
-        height: 80vh;
+        height: 70vh;
         bottom: 16px;
-        right: 8px;
+        right: 16px;
         left: auto;
-        border-radius: 18px 18px 0 18px;
-        box-shadow: 0 0 24px var(--shadow-strong);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
         padding-bottom: 0;
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
         position: fixed;
+        will-change: transform, opacity;
       }
+      /* Mobile: closed = offscreen bottom, open = visible. Uses translateY so it slides up */
       .chat-container.closed {
-        transform: translateX(110%) scale(0.98);
+        transform: translateY(110%);
         opacity: 0;
         pointer-events: none;
       }
       .chat-container.open {
-        transform: translateX(0) scale(1);
+        transform: translateY(0%);
         opacity: 1;
         pointer-events: auto;
       }
@@ -1015,6 +1018,71 @@
             handleUserSend();
           }
         });
+
+        // Touch drag handling for mobile: allow dragging chat up/down
+        (function setupMobileDrag() {
+          let drag = false;
+          let startY = 0;
+          let currentY = 0;
+          let containerHeight = 0;
+          const container = dom.chatContainer;
+          const header = dom.chatHeader;
+
+          function onTouchStart(e) {
+            if (window.innerWidth > 768) return; // mobile only
+            const t = e.touches ? e.touches[0] : e;
+            drag = true;
+            startY = t.clientY;
+            containerHeight = container.getBoundingClientRect().height || (window.innerHeight * 0.7);
+            // Ensure open so we can drag
+            container.classList.remove('closed');
+            container.classList.add('open');
+            container.style.transition = 'none';
+          }
+
+          function onTouchMove(e) {
+            if (!drag) return;
+            const t = e.touches ? e.touches[0] : e;
+            const delta = t.clientY - startY; // positive = dragging down
+            // Limit between 0 and containerHeight
+            const translate = Math.max(0, Math.min(delta, containerHeight));
+            currentY = translate;
+            container.style.transform = `translateY(${translate}px)`;
+            container.style.opacity = `${1 - translate / (containerHeight * 1.1)}`;
+          }
+
+          function onTouchEnd() {
+            if (!drag) return;
+            drag = false;
+            container.style.transition = '';
+            // If dragged more than 30% of height, close
+            if (currentY > containerHeight * 0.3) {
+              container.classList.remove('open');
+              container.classList.add('closed');
+              container.style.transform = '';
+              container.style.opacity = '';
+              const launcher = document.getElementById('chatLauncher');
+              if (launcher) launcher.style.display = 'flex';
+            } else {
+              // Snap back open
+              container.classList.remove('closed');
+              container.classList.add('open');
+              container.style.transform = '';
+              container.style.opacity = '';
+            }
+            currentY = 0;
+          }
+
+          // Attach to header for dragging area
+          if (header) {
+            header.addEventListener('touchstart', onTouchStart, { passive: true });
+            header.addEventListener('touchmove', onTouchMove, { passive: true });
+            header.addEventListener('touchend', onTouchEnd, { passive: true });
+            // Also mouse for simulator testing
+            header.addEventListener('mousedown', (e) => { if (window.innerWidth <= 768) { onTouchStart(e); window.addEventListener('mousemove', onTouchMove); } });
+            window.addEventListener('mouseup', () => { if (window.innerWidth <= 768) { onTouchEnd(); window.removeEventListener('mousemove', onTouchMove); } });
+          }
+        })();
 
         // Main page CTA listeners
         dom.headerReserveBtn.addEventListener('click', () => {
