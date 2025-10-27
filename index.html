@@ -783,7 +783,7 @@
      * The endpoint for the AI Receptionist.
      * IMPORTANT: This must be a publicly accessible URL. If you encounter CORS
      * errors, ensure your server (webhook) is configured to send:
-     * 'Access-Control-Allow-Origin: *'
+     * 'Access-Control-Allow-Origin: *'now 
      * 'Access-Control-Allow-Methods: POST, OPTIONS'
      * 'Access-Control-Allow-Headers: Content-Type'
      */
@@ -1097,33 +1097,41 @@
         messageEl.classList.add('message', msg.sender);
         
         let bubbleContent = '';
-        
+
         switch (msg.type) {
-          // Handle 'card' as a specific form request
-          case 'card':
-          case 'reservation_form':
-            bubbleContent = getReservationFormHTML(msg.message);
-            break;
-          case 'availability':
-            bubbleContent = getAvailabilityHTML(msg.message, msg.data);
-            break;
-          case 'reservation_confirm':
-            bubbleContent = getConfirmationHTML(msg.message, msg.data);
-            break;
-          case 'error':
-            bubbleContent = getErrorHTML(msg.message);
-            break;
+          // ...existing code...
           case 'text':
           default:
-            // Sanitize basic HTML - simple replace for links.
-            // A more robust solution would use a DOMPurify-like library.
-            const safeMessage = msg.message
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/<a href="([^"]+)"/g, '<a href="$1" target="_blank" rel="noopener noreferrer"');
-            bubbleContent = `<div class="message-bubble">${safeMessage}</div>`;
+            // Render markdown for bot messages
+            if (msg.sender === 'bot') {
+              // Use a simple markdown parser (marked.js or showdown)
+              // For this patch, use a minimal inline parser for bold, italics, lists
+              let md = msg.message || '';
+              // Escape HTML
+              md = md.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+              // Bold **text**
+              md = md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+              // Italic *text*
+              md = md.replace(/\*(.*?)\*/g, '<em>$1</em>');
+              // Lists: * item
+              md = md.replace(/(^|\n)\* (.*?)(?=\n|$)/g, '$1<li>$2</li>');
+              // Wrap lists in <ul> if any <li>
+              if (md.includes('<li>')) {
+                md = md.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+              }
+              // Links [text](url)
+              md = md.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+              bubbleContent = `<div class="message-bubble">${md}</div>`;
+            } else {
+              // User messages: just escape HTML
+              const safeMessage = msg.message
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/<a href=\"([^\"]+)\"/g, '<a href="$1" target="_blank" rel="noopener noreferrer"');
+              bubbleContent = `<div class="message-bubble">${safeMessage}</div>`;
+            }
         }
-        
+
         messageEl.innerHTML = bubbleContent;
         dom.chatBody.appendChild(messageEl);
         
@@ -1406,10 +1414,66 @@
             throw new Error(`HTTP error! status: ${response.status}`);
           }
 
-          const responseData = await response.json();
-          console.log('Received from webhook:', responseData);
-          handleWebhookResponse(responseData);
-
+          // Streaming support
+          if (response.body && response.body.getReader) {
+            let streamedText = '';
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let done = false;
+            hideTypingIndicator();
+            dom.sendBtn.disabled = false;
+            // Add a bot message bubble for streaming
+            const messageEl = document.createElement('div');
+            messageEl.classList.add('message', 'bot');
+            messageEl.innerHTML = `<div class=\"message-bubble\" id=\"streaming-bubble\"></div>`;
+            dom.chatBody.appendChild(messageEl);
+            scrollToBottom();
+            while (!done) {
+              const { value, done: streamDone } = await reader.read();
+              if (value) {
+                streamedText += decoder.decode(value);
+                // Try to parse JSON if possible
+                let displayText = '';
+                try {
+                  const parsed = JSON.parse(streamedText);
+                  if (parsed && parsed.response !== undefined) {
+                    if (typeof parsed.response === 'string') {
+                      displayText = parsed.response;
+                    } else if (parsed.response.answer) {
+                      displayText = parsed.response.answer;
+                    } else if (parsed.response.reply) {
+                      displayText = parsed.response.reply;
+                    }
+                  } else if (parsed.reply) {
+                    displayText = parsed.reply;
+                  }
+                } catch (e) {
+                  // Not yet valid JSON, do not show anything
+                }
+                const bubble = document.getElementById('streaming-bubble');
+                if (bubble) bubble.textContent = displayText;
+                scrollToBottom();
+              }
+              done = streamDone;
+            }
+            // Finalize message
+            // Remove the temporary streaming bubble before adding the final message
+            const bubble = document.getElementById('streaming-bubble');
+            if (bubble && bubble.parentElement) {
+              bubble.parentElement.remove();
+            }
+            try {
+              const parsed = JSON.parse(streamedText);
+              handleWebhookResponse(parsed);
+            } catch (e) {
+              // If not valid JSON, show nothing
+            }
+          } else {
+            // Fallback to normal JSON response
+            const responseData = await response.json();
+            console.log('Received from webhook:', responseData);
+            handleWebhookResponse(responseData);
+          }
         } catch (error) {
           console.error('Webhook Error:', error);
           handleWebhookError(error);
@@ -1425,6 +1489,11 @@
           if (typeof response.response === 'string') {
             // If response is a string, treat it as the reply
             reply = response.response;
+            type = 'text';
+            data = {};
+          } else if (typeof response.response === 'object' && response.response.answer) {
+            // If response is an object with 'answer', use that
+            reply = response.response.answer;
             type = 'text';
             data = {};
           } else {
