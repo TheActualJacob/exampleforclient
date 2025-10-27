@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thalassa - Greek Fine Dining</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* CSS Variables - Color Palette */
+    :root {
+      --navy: #1a2847;
+      --navy-light: #2d3e5f;
+      --gold: #d4af37;
+      --gold-light: #e6c968;
+      --marble: #f8f9fa;
+      --white: #ffffff;
+      --text-dark: #2c3e50;
+      --text-light: #6c757d;
+      --error-bg: #fff0f0;
+      --error-border: #fcc;
+      --error-text: #c33;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --shadow-strong: rgba(0, 0, 0, 0.25);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-dark);
+      background: var(--marble);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+    }
+    
+    /* Header */
+    header {
+      background: var(--navy);
+      color: var(--white);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .restaurant-name h1 {
+      font-size: 1.75rem;
+      color: var(--gold);
+      margin: 0;
+    }
+    
+    .restaurant-name p {
+      font-size: 0.75rem;
+      color: var(--white);
+      opacity: 0.8;
+      margin: 0;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    
+    .lang-toggle {
+      background: var(--navy-light);
+      border: 1px solid var(--gold);
+      color: var(--white);
+      padding: 0.5rem 0.75rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.3s ease;
+      min-width: 60px;
+      text-align: center;
+      min-height: 44px;
+    }
+    
+    .lang-toggle:hover {
+      background: var(--gold);
+      color: var(--navy);
+    }
+    
+    .reserve-btn {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px var(--shadow);
+      min-height: 44px;
+    }
+    
+    .reserve-btn:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow-strong);
+    }
+    
+    /* Hero Section */
+    .hero {
+      position: relative;
+      height: 50vh;
+      min-height: 300px;
+      background: linear-gradient(rgba(26, 40, 71, 0.7), rgba(26, 40, 71, 0.7)),
+                  url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80') center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--white);
+    }
+    
+    .hero-content h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--gold);
+    }
+    
+    .hero-content p {
+      font-size: 1.125rem;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    /* Main Content */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .section {
+      margin-bottom: 3rem;
+    }
+    
+    .section h2 {
+      font-size: 2rem;
+      color: var(--navy);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .card {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px var(--shadow-strong);
+    }
+    
+    .card h3 {
+      color: var(--navy);
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+    }
+    
+    .card p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+    
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+      justify-content: center;
+    }
+    
+    .quick-action-btn {
+      background: var(--white);
+      border: 2px solid var(--navy);
+      color: var(--navy);
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      min-height: 44px;
+    }
+    
+    .quick-action-btn:hover {
+      background: var(--navy);
+      color: var(--white);
+    }
+    
+    /* Chat Widget */
+    .chat-container {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      max-width: 450px;
+      height: 600px;
+      z-index: 1000;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    @media (max-width: 768px) {
+      .chat-container {
+        max-width: 100%;
+        height: 100vh;
+        height: 100dvh;
+      }
+    }
+    
+    .chat-container.closed {
+      transform: translateY(calc(100% - 60px));
+    }
+    
+    .chat-header {
+      background: var(--navy);
+      color: var(--white);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 -2px 10px var(--shadow);
+      flex-shrink: 0;
+    }
+    
+    .chat-header h3 {
+      font-size: 1.125rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .chat-toggle {
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+      transition: transform 0.3s ease;
+    }
+    
+    .chat-container.closed .chat-toggle {
+      transform: rotate(180deg);
+    }
+    
+    .chat-body {
+      background: var(--white);
+      height: 100%;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .message {
+      display: flex;
+      gap: 0.5rem;
+      animation: messageSlide 0.3s ease;
+      max-width: 100%;
+    }
+    
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .message.user {
+      flex-direction: row-reverse;
+    }
+    
+    .message-bubble {
+      max-width: 80%;
+      padding: 0.75rem 1rem;
+      border-radius: 18px;
+      box-shadow: 0 2px 4px var(--shadow);
+      word-wrap: break-word;
+    }
+    
+    .message.bot .message-bubble {
+      background: var(--marble);
+      color: var(--text-dark);
+      border-bottom-left-radius: 4px;
+    }
+    
+    .message.user .message-bubble {
+      background: var(--navy);
+      color: var(--white);
+      border-bottom-right-radius: 4px;
+    }
+    
+    .typing-indicator {
+      display: flex;
+      gap: 0.25rem;
+      padding: 0.75rem 1rem;
+      background: var(--marble);
+      border-radius: 18px;
+      width: fit-content;
+    }
+    
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--text-light);
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+    
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+    }
+    
+    .chat-input-area {
+      background: var(--white);
+      padding: 1rem;
+      border-top: 1px solid var(--marble);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    
+    .chat-input {
+      flex: 1;
+      border: 2px solid var(--marble);
+      padding: 0.75rem 1rem;
+      border-radius: 25px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+      min-height: 44px;
+    }
+    
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+    
+    .chat-input.shake {
+      animation: shake 0.4s;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    
+    .send-btn {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+    
+    .send-btn:hover:not(:disabled) {
+      background: var(--gold-light);
+      transform: scale(1.1);
+    }
+    
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .mic-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: color 0.3s ease;
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    .mic-btn:hover {
+      color: var(--navy);
+    }
+    
+    /* Reservation Card */
+    .reservation-card {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      color: var(--white);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+    }
+    
+    .reservation-card h4 {
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    
+    .reservation-details {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.9rem;
+    }
+    
+    .detail-row span:first-child {
+      opacity: 0.8;
+    }
+    
+    .download-ics-btn {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+      min-height: 44px;
+    }
+    
+    .download-ics-btn:hover {
+      background: var(--gold-light);
+    }
+    
+    /* Availability Panel */
+    .availability-panel {
+      background: var(--white);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 2px solid var(--gold);
+      margin: 0.5rem 0;
+    }
+    
+    .availability-panel h4 {
+      color: var(--navy);
+      margin-bottom: 1rem;
+    }
+    
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.5rem;
+    }
+    
+    .time-slot {
+      background: var(--marble);
+      padding: 0.75rem;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      font-weight: 500;
+    }
+    
+    .time-slot:hover {
+      background: var(--gold-light);
+      border-color: var(--gold);
+    }
+    
+    /* Error Panel */
+    .error-panel {
+      background: var(--error-bg);
+      border: 2px solid var(--error-border);
+      color: var(--error-text);
+      padding: 1rem;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+    }
+    
+    .error-panel h4 {
+      margin-bottom: 0.5rem;
+      color: var(--error-text);
+    }
+    
+    /* Reservation Form */
+    .reservation-form {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      border: 2px solid var(--marble);
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+      color: var(--navy);
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--marble);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .submit-reservation-btn {
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      padding: 1rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+      min-height: 48px;
+    }
+    
+    .submit-reservation-btn:hover:not(:disabled) {
+      background: var(--navy-light);
+    }
+    
+    .submit-reservation-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    /* Utility */
+    .text-center {
+      text-align: center;
+    }
+    
+    /* Accessibility */
+    :focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
+    
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+    
+    /* Footer */
+    footer {
+      background: var(--navy);
+      color: var(--white);
+      padding: 2rem 1rem;
+      text-align: center;
+      margin-top: 3rem;
+    }
+    
+    footer p {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="restaurant-name">
+        <h1 id="restaurantName">Thalassa</h1>
+        <p id="restaurantSubtitle">Fine Greek Dining</p>
+      </div>
+      <div class="header-actions">
+        <button class="lang-toggle" id="langToggle" aria-label="Switch language">EN</button>
+        <button class="reserve-btn" id="headerReserveBtn" aria-label="Make a reservation">Reserve</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h2 id="heroTitle">Experience Authentic Greek Cuisine</h2>
+      <p id="heroSubtitle">Where tradition meets modern luxury in every dish</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <div class="section">
+      <h2 id="quickActionsTitle">How Can We Help?</h2>
+      <div class="quick-actions">
+        <button class="quick-action-btn" data-action="reserve" id="quickReserve">Make Reservation</button>
+        <button class="quick-action-btn" data-action="availability" id="quickAvailability">Check Availability</button>
+        <button class="quick-action-btn" data-action="hours" id="quickHours">Opening Hours</button>
+        <button class="quick-action-btn" data-action="menu" id="quickMenu">View Menu</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 id="aboutTitle">About Thalassa</h2>
+      <div class="cards">
+        <div class="card">
+          <h3 id="aboutCard1Title">Our Story</h3>
+          <p id="aboutCard1Text">Inspired by the azure waters of the Aegean, Thalassa brings authentic Greek flavors to an elegant, contemporary setting.</p>
+        </div>
+        <div class="card">
+          <h3 id="aboutCard2Title">Fresh & Local</h3>
+          <p id="aboutCard2Text">We source the finest ingredients from local markets and trusted suppliers to ensure every dish meets our high standards.</p>
+        </div>
+        <div class="card">
+          <h3 id="aboutCard3Title">Private Events</h3>
+          <p id="aboutCard3Text">Host your special occasion in our exclusive private dining room with personalized menus and dedicated service.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 id="menuTitle">Signature Dishes</h2>
+      <div class="cards">
+        <div class="card">
+          <h3 id="dish1Name">Grilled Octopus</h3>
+          <p id="dish1Desc">Tender octopus charred to perfection, served with fava puree and capers</p>
+        </div>
+        <div class="card">
+          <h3 id="dish2Name">Lamb Kleftiko</h3>
+          <p id="dish2Desc">Slow-roasted lamb shoulder with herbs, potatoes, and lemon</p>
+        </div>
+        <div class="card">
+          <h3 id="dish3Name">Sea Bass</h3>
+          <p id="dish3Desc">Whole Mediterranean sea bass baked in sea salt crust</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p id="footerText">&copy; 2024 Thalassa Restaurant. All rights reserved.</p>
+    <p id="footerAddress">123 Harbor Street, Athens | +30 210 123 4567</p>
+  </footer>
+
+  <div class="chat-container closed" id="chatContainer">
+    <div class="chat-header" id="chatHeader" role="button" tabindex="0" aria-expanded="false" aria-controls="chatBody">
+      <h3>
+        <span class="status-dot"></span>
+        <span id="chatTitle">AI Receptionist</span>
+      </h3>
+      <button class="chat-toggle" id="chatToggle" aria-label="Toggle chat">▼</button>
+    </div>
+    <div class="chat-body" id="chatBody" role="log" aria-live="polite" aria-label="Chat messages">
+      </div>
+    <div class="chat-input-area">
+      <button class="mic-btn" aria-label="Voice input (disabled)" disabled>🎤</button>
+      <input 
+        type="text" 
+        class="chat-input" 
+        id="chatInput" 
+        placeholder="Type your message..."
+        aria-label="Chat message input"
+      >
+      <button class="send-btn" id="sendBtn" aria-label="Send message">➤</button>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================================
+    // CONFIGURATION - Change these values as needed
+    // ============================================================================
+    
+    /**
+     * DEV_MODE
+     * Set to 'true' to use simulated responses (from 'getSimulatedResponse' function)
+     * Set to 'false' to call the live WEBHOOK_URL.
+     */
+    const DEV_MODE = false; 
+    
+    /**
+     * WEBHOOK_URL
+     * The endpoint for the AI Receptionist.
+     * IMPORTANT: This must be a publicly accessible URL. If you encounter CORS
+     * errors, ensure your server (webhook) is configured to send:
+     * 'Access-Control-Allow-Origin: *'
+     * 'Access-Control-Allow-Methods: POST, OPTIONS'
+     * 'Access-Control-Allow-Headers: Content-Type'
+     */
+    const WEBHOOK_URL = 'https://automateitiong.app.n8n.cloud/webhook-test/567610d0-aa3b-47b7-a6cc-be6f1da03c94';
+    
+    // ============================================================================
+    // TRANSLATIONS
+    // Edit the 'strings' object to modify UI text in English/Greek
+    // ============================================================================
+    
+    const strings = {
+      en: {
+        // Page Content
+        restaurantName: 'Thalassa',
+        restaurantSubtitle: 'Fine Greek Dining',
+        heroTitle: 'Experience Authentic Greek Cuisine',
+        heroSubtitle: 'Where tradition meets modern luxury in every dish',
+        quickActionsTitle: 'How Can We Help?',
+        quickReserve: 'Make Reservation',
+        quickAvailability: 'Check Availability',
+        quickHours: 'Opening Hours',
+        quickMenu: 'View Menu',
+        aboutTitle: 'About Thalassa',
+        aboutCard1Title: 'Our Story',
+        aboutCard1Text: 'Inspired by the azure waters of the Aegean, Thalassa brings authentic Greek flavors to an elegant, contemporary setting.',
+        aboutCard2Title: 'Fresh & Local',
+        aboutCard2Text: 'We source the finest ingredients from local markets and trusted suppliers to ensure every dish meets our high standards.',
+        aboutCard3Title: 'Private Events',
+        aboutCard3Text: 'Host your special occasion in our exclusive private dining room with personalized menus and dedicated service.',
+        menuTitle: 'Signature Dishes',
+        dish1Name: 'Grilled Octopus',
+        dish1Desc: 'Tender octopus charred to perfection, served with fava puree and capers',
+        dish2Name: 'Lamb Kleftiko',
+        dish2Desc: 'Slow-roasted lamb shoulder with herbs, potatoes, and lemon',
+        dish3Name: 'Sea Bass',
+        dish3Desc: 'Whole Mediterranean sea bass baked in sea salt crust',
+        footerText: '© 2024 Thalassa Restaurant. All rights reserved.',
+        footerAddress: '123 Harbor Street, Athens | +30 210 123 4567',
+        
+        // Chat & Forms
+        chatTitle: 'AI Receptionist',
+        chatPlaceholder: 'Type your message...',
+        headerReserveBtn: 'Reserve',
+        welcomeMessage: "Welcome to Thalassa! I'm your AI assistant. How may I help you today? You can ask about our menu, hours, or make a reservation.",
+        
+        // Form labels
+        formName: 'Full Name',
+        formPhone: 'Phone Number',
+        formPartySize: 'Party Size',
+        formDate: 'Date',
+        formTime: 'Time',
+        formNotes: 'Special Requests (e.g., allergies, window seat)',
+        formSubmit: 'Submit Reservation',
+        downloadIcs: 'Add to Calendar',
+        availabilityTitle: 'Available Times',
+        reservationTitle: 'Reservation Confirmed!',
+        reservationNumber: 'Confirmation #',
+        reservationFor: 'Name',
+        reservationParty: 'Party',
+        
+        // Error messages
+        errorTitle: 'Connection Error',
+        errorMessage: 'Our AI assistant is currently unavailable. This might be due to a network or CORS issue. Please try again later or call us directly.',
+        errorGeneric: 'An unexpected error occurred. Please try again.'
+      },
+      el: {
+        // Page Content
+        restaurantName: 'Θάλασσα',
+        restaurantSubtitle: 'Εκλεκτή Ελληνική Κουζίνα',
+        heroTitle: 'Ζήστε την Αυθεντική Ελληνική Κουζίνα',
+        heroSubtitle: 'Όπου η παράδοση συναντά τη σύγχρονη πολυτέλεια σε κάθε πιάτο',
+        quickActionsTitle: 'Πώς Μπορούμε Να Βοηθήσουμε;',
+        quickReserve: 'Κάντε Κράτηση',
+        quickAvailability: 'Ελέγξτε Διαθεσιμότητα',
+        quickHours: 'Ωράριο Λειτουργίας',
+        quickMenu: 'Δείτε το Μενού',
+        aboutTitle: 'Σχετικά με τη Θάλασσα',
+        aboutCard1Title: 'Η Ιστορία μας',
+        aboutCard1Text: 'Εμπνευσμένοι από τα γαλάζια νερά του Αιγαίου, η Θάλασσα φέρνει αυθεντικές ελληνικές γεύσεις σε ένα κομψό, σύγχρονο περιβάλλον.',
+        aboutCard2Title: 'Φρέσκα & Τοπικά',
+        aboutCard2Text: 'Προμηθευόμαστε τα καλύτερα υλικά από τοπικές αγορές και αξιόπιστους προμηθευτές για να διασφαλίσουμε ότι κάθε πιάτο πληροί τα υψηλά μας standards.',
+        aboutCard3Title: 'Ιδιωτικές Εκδηλώσεις',
+        aboutCard3Text: 'Φιλοξενήστε την ιδιαίτερη περίσταση σας στην αποκλειστική μας ιδιωτική αίθουσα με εξατομικευμένα μενού και αφοσιωμένη εξυπηρέτηση.',
+        menuTitle: 'Εκλεκτά Πιάτα',
+        dish1Name: 'Χταπόδι Σχάρας',
+        dish1Desc: 'Τρυφερό χταπόδι ψημένο στην τελειότητα, σερβιρισμένο με πουρέ φάβας και κάππαρη',
+        dish2Name: 'Αρνί Κλέφτικο',
+        dish2Desc: 'Αργοψημένο αρνίσιο μπούτι με μυρωδικά, πατάτες και λεμόνι',
+        dish3Name: 'Λαυράκι',
+        dish3Desc: 'Ολόκληρο λαυράκι Μεσογείου ψημένο σε κρούστα αλατιού',
+        footerText: '© 2024 Εστιατόριο Θάλασσα. Με επιφύλαξη παντός δικαιώματος.',
+        footerAddress: 'Οδός Λιμανιού 123, Αθήνα | +30 210 123 4567',
+        
+        // Chat & Forms
+        chatTitle: 'AI Υποδοχή',
+        chatPlaceholder: 'Γράψτε το μήνυμά σας...',
+        headerReserveBtn: 'Κράτηση',
+        welcomeMessage: 'Καλώς ήρθατε στο Θάλασσα! Είμαι ο AI βοηθός σας. Πώς μπορώ να σας εξυπηρετήσω; Μπορείτε να ρωτήσετε για το μενού, το ωράριο, ή να κάνετε κράτηση.',
+
+        // Form labels
+        formName: 'Ονοματεπώνυμο',
+        formPhone: 'Τηλέφωνο',
+        formPartySize: 'Αριθμός Ατόμων',
+        formDate: 'Ημερομηνία',
+        formTime: 'Ώρα',
+        formNotes: 'Ειδικά Αιτήματα (π.χ. αλλεργίες, θέση σε παράθυρο)',
+        formSubmit: 'Υποβολή Κράτησης',
+        downloadIcs: 'Προσθήκη στο Ημερολόγιο',
+        availabilityTitle: 'Διαθέσιμες Ώρες',
+        reservationTitle: 'Η Κράτηση Επιβεβαιώθηκε!',
+        reservationNumber: 'Αρ. Επιβεβαίωσης',
+        reservationFor: 'Όνομα',
+        reservationParty: 'Άτομα',
+        
+        // Error messages
+        errorTitle: 'Σφάλμα Σύνδεσης',
+        errorMessage: 'Ο AI βοηθός μας δεν είναι διαθέσιμος αυτή τη στιγμή. Αυτό μπορεί να οφείλεται σε πρόβλημα δικτύου ή CORS. Παρακαλώ δοκιμάστε ξανά αργότερα ή καλέστε μας.',
+        errorGeneric: 'Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα. Παρακαλώ δοκιμάστε ξανά.'
+      }
+    };
+
+    // ============================================================================
+    // APPLICATION LOGIC
+    // ============================================================================
+    
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // --- STATE ---
+      let currentLang = 'en';
+      let conversation = [];
+      let isBotTyping = false;
+      let isChatOpen = false;
+      let userId = getOrSetUserId();
+      
+      // --- SELECTORS ---
+      const dom = {
+        chatContainer: document.getElementById('chatContainer'),
+        chatHeader: document.getElementById('chatHeader'),
+        chatToggle: document.getElementById('chatToggle'),
+        chatBody: document.getElementById('chatBody'),
+        chatInput: document.getElementById('chatInput'),
+        sendBtn: document.getElementById('sendBtn'),
+        langToggle: document.getElementById('langToggle'),
+        headerReserveBtn: document.getElementById('headerReserveBtn'),
+        quickActionButtons: document.querySelectorAll('.quick-action-btn')
+      };
+
+      // --- INITIALIZATION ---
+      function init() {
+        // Load language from localStorage or default
+        const savedLang = localStorage.getItem('thalassaLang');
+        if (savedLang && strings[savedLang]) {
+          currentLang = savedLang;
+        }
+        setLanguage(currentLang);
+
+        // Load conversation from localStorage
+        loadConversation();
+
+        // Add Event Listeners
+        dom.langToggle.addEventListener('click', toggleLanguage);
+        dom.chatHeader.addEventListener('click', toggleChat);
+        dom.chatToggle.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent header click
+          toggleChat();
+        });
+        
+        dom.sendBtn.addEventListener('click', handleUserSend);
+        dom.chatInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleUserSend();
+          }
+        });
+
+        // Main page CTA listeners
+        dom.headerReserveBtn.addEventListener('click', () => {
+          openChatAndSendIntent('reserve');
+        });
+        
+        dom.quickActionButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            if (action) {
+              openChatAndSendIntent(action);
+            }
+          });
+        });
+      }
+
+      // --- LANGUAGE ---
+      function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('thalassaLang', lang);
+        
+        // Update toggle button text
+        dom.langToggle.textContent = lang === 'en' ? 'ΕΛ' : 'EN';
+        document.documentElement.lang = lang;
+
+        // Update all UI strings
+        const langStrings = strings[lang];
+        for (const key in langStrings) {
+          const element = document.getElementById(key);
+          if (element) {
+            // Use innerText for security, though textContent is faster
+            // For this controlled use case, textContent is fine.
+            element.textContent = langStrings[key];
+          }
+        }
+        
+        // Update placeholders
+        dom.chatInput.placeholder = langStrings.chatPlaceholder;
+      }
+      
+      function toggleLanguage() {
+        setLanguage(currentLang === 'en' ? 'el' : 'en');
+      }
+
+      // --- CHAT VISIBILITY ---
+      function toggleChat() {
+        isChatOpen = !isChatOpen;
+        dom.chatContainer.classList.toggle('closed', !isChatOpen);
+        dom.chatHeader.setAttribute('aria-expanded', isChatOpen);
+        if (isChatOpen) {
+          dom.chatInput.focus();
+          scrollToBottom();
+        }
+      }
+      
+      function openChatAndSendIntent(intent) {
+        if (!isChatOpen) {
+          toggleChat();
+        }
+        
+        let message = '';
+        switch(intent) {
+          case 'reserve': message = strings[currentLang].quickReserve; break;
+          case 'availability': message = strings[currentLang].quickAvailability; break;
+          case 'hours': message = strings[currentLang].quickHours; break;
+          case 'menu': message = strings[currentLang].quickMenu; break;
+        }
+        
+        // Add a "silent" user message to history
+        addMessage('user', message, 'text', {}, true);
+        // Send the intent to the bot
+        sendMessageToBot(message, intent);
+      }
+
+      // --- CONVERSATION & MESSAGES ---
+      function getOrSetUserId() {
+        let id = localStorage.getItem('thalassaUserId');
+        if (!id) {
+          id = `web_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+          localStorage.setItem('thalassaUserId', id);
+        }
+        return id;
+      }
+      
+      function loadConversation() {
+        const savedConvo = localStorage.getItem('thalassaConversation');
+        if (savedConvo) {
+          conversation = JSON.parse(savedConvo);
+        }
+        if (conversation.length === 0) {
+          // Add welcome message
+          conversation.push({
+            sender: 'bot',
+            message: strings[currentLang].welcomeMessage,
+            type: 'text',
+            data: {}
+          });
+        }
+        renderConversation();
+      }
+      
+      function saveConversation() {
+        localStorage.setItem('thalassaConversation', JSON.stringify(conversation));
+      }
+      
+      function renderConversation() {
+        dom.chatBody.innerHTML = '';
+        conversation.forEach(msg => renderMessage(msg));
+        scrollToBottom();
+      }
+
+      /**
+       * Adds a message to the state and renders it
+       * @param {string} sender - 'user' or 'bot'
+       * @param {string} message - The text content or title
+       * @param {string} type - 'text', 'reservation_form', 'availability', 'reservation_confirm', 'error'
+       * @param {object} data - Optional data payload for structured messages
+       * @param {boolean} silent - If true, adds to history but does not render immediately
+       */
+      function addMessage(sender, message, type = 'text', data = {}, silent = false) {
+        const msg = { sender, message, type, data };
+        conversation.push(msg);
+        saveConversation();
+        
+        if (!silent) {
+          renderMessage(msg);
+          scrollToBottom();
+        }
+      }
+
+      /**
+       * Renders a single message object into the chatBody
+       * @param {object} msg - The message object
+       */
+      function renderMessage(msg) {
+        const messageEl = document.createElement('div');
+        messageEl.classList.add('message', msg.sender);
+        
+        let bubbleContent = '';
+        
+        switch (msg.type) {
+          // Handle 'card' as a specific form request
+          case 'card':
+          case 'reservation_form':
+            bubbleContent = getReservationFormHTML(msg.message);
+            break;
+          case 'availability':
+            bubbleContent = getAvailabilityHTML(msg.message, msg.data);
+            break;
+          case 'reservation_confirm':
+            bubbleContent = getConfirmationHTML(msg.message, msg.data);
+            break;
+          case 'error':
+            bubbleContent = getErrorHTML(msg.message);
+            break;
+          case 'text':
+          default:
+            // Sanitize basic HTML - simple replace for links.
+            // A more robust solution would use a DOMPurify-like library.
+            const safeMessage = msg.message
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/<a href="([^"]+)"/g, '<a href="$1" target="_blank" rel="noopener noreferrer"');
+            bubbleContent = `<div class="message-bubble">${safeMessage}</div>`;
+        }
+        
+        messageEl.innerHTML = bubbleContent;
+        dom.chatBody.appendChild(messageEl);
+        
+        // Add event listeners for dynamic content
+        addDynamicListeners(messageEl, msg);
+        scrollToBottom();
+      }
+      
+      /**
+       * Adds event listeners to dynamically rendered HTML
+       * @param {HTMLElement} messageEl - The root message element
+       * @param {object} msg - The message object
+       */
+      function addDynamicListeners(messageEl, msg) {
+        // Reservation form submit
+        const form = messageEl.querySelector('.reservation-form');
+        if (form) {
+          form.addEventListener('submit', (e) => handleFormSubmit(e, form));
+        }
+        
+        // Availability time slot click
+        const timeSlots = messageEl.querySelectorAll('.time-slot');
+        if (timeSlots) {
+          timeSlots.forEach(slot => {
+            slot.addEventListener('click', () => {
+              const time = slot.dataset.time;
+              const date = slot.dataset.date;
+              const userMessage = `I'd like to book ${time} on ${date}.`;
+              addMessage('user', userMessage);
+              sendMessageToBot(userMessage, 'select_time', { time, date });
+            });
+          });
+        }
+        
+        // ICS download click
+        const icsBtn = messageEl.querySelector('.download-ics-btn');
+        if (icsBtn) {
+          icsBtn.addEventListener('click', () => handleIcsDownload(msg.data));
+        }
+      }
+
+      function showTypingIndicator() {
+        if (isBotTyping) return;
+        isBotTyping = true;
+        const typingEl = document.createElement('div');
+        typingEl.classList.add('message', 'bot', 'typing-indicator-container');
+        typingEl.innerHTML = `
+          <div class="typing-indicator">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        `;
+        dom.chatBody.appendChild(typingEl);
+        scrollToBottom();
+      }
+      
+      function hideTypingIndicator() {
+        isBotTyping = false;
+        const typingEl = dom.chatBody.querySelector('.typing-indicator-container');
+        if (typingEl) {
+          typingEl.remove();
+        }
+      }
+      
+      function scrollToBottom() {
+        // Delay scroll slightly to allow DOM to render
+        setTimeout(() => {
+          dom.chatBody.scrollTop = dom.chatBody.scrollHeight;
+        }, 50);
+      }
+
+      // --- HTML RENDERERS ---
+      
+      function getReservationFormHTML(title) {
+        const s = strings[currentLang];
+        const today = new Date().toISOString().split('T')[0];
+        
+        return `
+          <div class="reservation-form">
+            <h4>${title || s.quickReserve}</h4>
+            <form>
+              <div class="form-group">
+                <label for="res-name">${s.formName}</label>
+                <input type="text" id="res-name" name="name" required>
+              </div>
+              <div class="form-group">
+                <label for="res-phone">${s.formPhone}</label>
+                <input type="tel" id="res-phone" name="phone" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="res-party">${s.formPartySize}</label>
+                  <input type="number" id="res-party" name="partySize" min="1" max="12" value="2" required>
+                </div>
+                <div class="form-group">
+                  <label for="res-date">${s.formDate}</label>
+                  <input type="date" id="res-date" name="date" min="${today}" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="res-time">${s.formTime}</label>
+                <input type="time" id="res-time" name="time" step="900" required>
+              </div>
+              <div class="form-group">
+                <label for="res-notes">${s.formNotes}</label>
+                <textarea id="res-notes" name="notes" rows="2"></textarea>
+              </div>
+              <button type="submit" class="submit-reservation-btn">${s.formSubmit}</button>
+            </form>
+          </div>
+        `;
+      }
+      
+      function getAvailabilityHTML(title, data) {
+        const s = strings[currentLang];
+        // Ensure data.times is an array, default to empty
+        const times = Array.isArray(data?.times) ? data.times : [];
+        const date = data?.date || new Date().toISOString().split('T')[0];
+        
+        let slotsHTML = '';
+        if (times.length > 0) {
+          slotsHTML = times.map(time => 
+            `<button class="time-slot" data-time="${time}" data-date="${date}">${time}</button>`
+          ).join('');
+        } else {
+          slotsHTML = `<p>${strings[currentLang].errorGeneric}</p>`; // Fallback
+        }
+
+        return `
+          <div class="availability-panel">
+            <h4>${title || s.availabilityTitle} (${date})</h4>
+            <div class="time-slots">
+              ${slotsHTML}
+            </div>
+          </div>
+        `;
+      }
+      
+      function getConfirmationHTML(title, data) {
+        const s = strings[currentLang];
+        const { confirmationId, name, partySize, date, time } = data;
+        
+        return `
+          <div class="reservation-card">
+            <h4>${title || s.reservationTitle}</h4>
+            <div class="reservation-details">
+              <div class="detail-row">
+                <span>${s.reservationNumber}:</span>
+                <strong>${confirmationId || 'N/A'}</strong>
+              </div>
+              <div class="detail-row">
+                <span>${s.reservationFor}:</span>
+                <strong>${name || 'N/A'}</strong>
+              </div>
+              <div class="detail-row">
+                <span>${s.reservationParty}:</span>
+                <strong>${partySize || 'N/A'}</strong>
+              </div>
+              <div class="detail-row">
+                <span>${s.formDate}:</span>
+                <strong>${date || 'N/A'}</strong>
+              </div>
+              <div class="detail-row">
+                <span>${s.formTime}:</span>
+                <strong>${time || 'N/A'}</strong>
+              </div>
+            </div>
+            <button class="download-ics-btn">${s.downloadIcs}</button>
+          </div>
+        `;
+      }
+      
+      function getErrorHTML(message) {
+        const s = strings[currentLang];
+        return `
+          <div class="error-panel">
+            <h4>${s.errorTitle}</h4>
+            <p>${message || s.errorMessage}</p>
+          </div>
+        `;
+      }
+
+      // --- WEBHOOK & BOT LOGIC ---
+      
+      function handleUserSend() {
+        const message = dom.chatInput.value.trim();
+        if (!message) {
+          // Shake animation
+          dom.chatInput.classList.add('shake');
+          setTimeout(() => dom.chatInput.classList.remove('shake'), 400);
+          return;
+        }
+        
+        if (isBotTyping) return; // Prevent spamming
+        
+        addMessage('user', message);
+        dom.chatInput.value = '';
+        
+        sendMessageToBot(message, 'text');
+      }
+      
+      /**
+       * Handles submission of the inline reservation form
+       */
+      function handleFormSubmit(event, formElement) {
+        event.preventDefault();
+        const formData = new FormData(formElement);
+        const reservationData = Object.fromEntries(formData.entries());
+        
+        // Combine date and time to ISO string
+        reservationData.dateISO = new Date(`${reservationData.date}T${reservationData.time}`).toISOString();
+        
+        const userMessage = `Reservation request for ${reservationData.partySize} on ${reservationData.date} at ${reservationData.time}.`;
+        
+        // Add a "silent" user message
+        addMessage('user', userMessage, 'text', {}, true);
+        
+        // Send structured request to bot
+        sendMessageToBot(userMessage, 'submit_reservation', {
+          reservation: reservationData
+        });
+        
+        // Disable form
+        formElement.querySelectorAll('input, textarea, button').forEach(el => el.disabled = true);
+        formElement.querySelector('.submit-reservation-btn').textContent = 'Submitting...';
+      }
+
+      /**
+       * Sends the message to the webhook
+       * @param {string} message - User's text
+       * @param {string} intent - 'text', 'reserve', 'availability', etc.
+       * @param {object} metaData - Extra data, e.g., { reservation: {...} }
+       */
+      async function sendMessageToBot(message, intent = 'text', metaData = {}) {
+        showTypingIndicator();
+        dom.sendBtn.disabled = true;
+
+        const payload = {
+          source: 'website',
+          lang: currentLang,
+          message: message,
+          meta: {
+            userId: userId,
+            timestamp: new Date().toISOString(),
+            intent: intent,
+            ...metaData
+          }
+        };
+        
+        console.log('Sending to webhook:', payload);
+
+        // Always show reservation form if user types about reservation
+        if (intent === 'reserve' || message.toLowerCase().includes('reservation')) {
+          const simulatedResponse = getSimulatedResponse(payload);
+          setTimeout(() => {
+            handleWebhookResponse(simulatedResponse);
+          }, 1000 + Math.random() * 1000);
+          return;
+        }
+        if (DEV_MODE) {
+          // Use simulated response
+          const simulatedResponse = getSimulatedResponse(payload);
+          setTimeout(() => {
+            handleWebhookResponse(simulatedResponse);
+          }, 1000 + Math.random() * 1000);
+          return;
+        }
+
+        try {
+          const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const responseData = await response.json();
+          console.log('Received from webhook:', responseData);
+          handleWebhookResponse(responseData);
+
+        } catch (error) {
+          console.error('Webhook Error:', error);
+          handleWebhookError(error);
+        }
+      }
+      
+      function handleWebhookResponse(response) {
+        hideTypingIndicator();
+        dom.sendBtn.disabled = false;
+        // Support webhook response in format: { response: { ... } }
+        let reply, type = 'text', data = {};
+        if (response && typeof response === 'object' && response.response !== undefined) {
+          if (typeof response.response === 'string') {
+            // If response is a string, treat it as the reply
+            reply = response.response;
+            type = 'text';
+            data = {};
+          } else {
+            reply = response.response.reply;
+            type = response.response.type || 'text';
+            data = response.response.data || {};
+          }
+        } else {
+          reply = response.reply;
+          type = response.type || 'text';
+          data = response.data || {};
+        }
+        if (!reply) {
+          console.error('Invalid response from webhook:', response);
+          addMessage('bot', strings[currentLang].errorGeneric, 'error');
+          return;
+        }
+        addMessage('bot', reply, type, data);
+      }
+      
+      function handleWebhookError(error) {
+        hideTypingIndicator();
+        dom.sendBtn.disabled = false;
+        
+        // Specific message for CORS/Network error
+        let errorMessage = strings[currentLang].errorMessage;
+        if (error.message.includes('Failed to fetch')) {
+          errorMessage = strings[currentLang].errorMessage;
+        }
+        
+        addMessage('bot', errorMessage, 'error');
+      }
+      
+      /**
+       * Generates simulated responses for DEV_MODE
+       */
+      function getSimulatedResponse(payload) {
+        const { intent, reservation } = payload.meta;
+        
+        if (intent === 'reserve' || payload.message.toLowerCase().includes('reservation')) {
+          return {
+            reply: 'Certainly! Please provide your details below.',
+            type: 'reservation_form',
+            data: {}
+          };
+        }
+        
+        if (intent === 'availability' || payload.message.toLowerCase().includes('availability')) {
+          return {
+            reply: 'Here are the available slots for tonight:',
+            type: 'availability',
+            data: {
+              date: new Date().toISOString().split('T')[0],
+              times: ['18:00', '18:30', '19:00', '20:30', '21:00']
+            }
+          };
+        }
+        
+        if (intent === 'submit_reservation' && reservation) {
+          return {
+            reply: 'Your table is confirmed!',
+            type: 'reservation_confirm',
+            data: {
+              confirmationId: `TH-${Math.floor(Math.random() * 9000 + 1000)}`,
+              name: reservation.name,
+              partySize: reservation.partySize,
+              date: reservation.date,
+              time: reservation.time
+            }
+          };
+        }
+        
+        if (intent === 'hours') {
+          return {
+            reply: 'We are open Tuesday-Sunday from 17:00 to 23:00. We are closed on Mondays.',
+            type: 'text',
+            data: {}
+          };
+        }
+        
+        if (intent === 'menu') {
+           return {
+            reply: 'Our signature dishes include Grilled Octopus, Lamb Kleftiko, and fresh Sea Bass. You can find more on our main page!',
+            type: 'text',
+            data: {}
+          };
+        }
+
+        // Default text reply
+        return {
+          reply: `(Simulated) You said: "${payload.message}"`,
+          type: 'text',
+          data: {}
+        };
+      }
+      
+      // --- UTILITIES ---
+      
+      /**
+       * Generates and downloads an .ics calendar file
+       * @param {object} data - The reservation confirmation data
+       */
+      function handleIcsDownload(data) {
+        const { name, date, time } = data;
+        
+        // 1. Format date and time
+        const eventStart = new Date(`${date}T${time}`);
+        // Assume 2 hour duration
+        const eventEnd = new Date(eventStart.getTime() + 2 * 60 * 60 * 1000);
+        
+        // 2. Helper to format to UTC (YYYYMMDDTHHMMSSZ)
+        const toUTCString = (dt) => {
+          return dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+        
+        const utcStart = toUTCString(eventStart);
+        const utcEnd = toUTCString(eventEnd);
+        const utcNow = toUTCString(new Date());
+
+        // 3. Build ICS string
+        const icsContent = [
+          'BEGIN:VCALENDAR',
+          'VERSION:2.0',
+          'PRODID:-//ThalassaRestaurant//Reservation//EN',
+          'BEGIN:VEVENT',
+          `UID:${data.confirmationId || utcNow}@thalassa.com`,
+          `DTSTAMP:${utcNow}`,
+          `DTSTART:${utcStart}`,
+          `DTEND:${utcEnd}`,
+          `SUMMARY:Reservation at Thalassa for ${name}`,
+          `DESCRIPTION:Reservation for ${data.partySize} guests. Confirmation: ${data.confirmationId}`,
+          `LOCATION:${strings.en.footerAddress}`, // Use 'en' for consistency
+          'END:VEVENT',
+          'END:VCALENDAR'
+        ].join('\r\n');
+
+        // 4. Create and trigger download
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'reservation_thalassa.ics';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+      
+      // --- START THE APP ---
+      init();
+    });
+  </script>
+
+</body>
+</html>
